@@ -1,6 +1,6 @@
 
 function [spikeTimes, clusterIDs, amplitudes, templates, templateFeatures, ...
-    templateFeatureInds, pcFeatures, pcFeatureInds] = rezToPhy(rez, savePath)
+    templateFeatureInds, pcFeatures, pcFeatureInds] = rezToPhy(rez, savePath, sDatFileName)
 % pull out results from kilosort's rez to either return to workspace or to
 % save in the appropriate format for the phy GUI to run on. If you provide
 % a savePath it should be a folder, and you will need to have npy-matlab
@@ -95,7 +95,7 @@ if ~isempty(savePath)
      %make params file
     if ~exist(fullfile(savePath,'params.py'),'file')
         fid = fopen(fullfile(savePath,'params.py'), 'w');
-        fprintf(fid,['dat_path = ''',fname '''\n']);
+        fprintf(fid,['dat_path = ''',sDatFileName '''\n']);
         fprintf(fid,'n_channels_dat = %i\n',rez.ops.NchanTOT);
         fprintf(fid,'dtype = ''int16''\n');
         fprintf(fid,'offset = 0\n');
