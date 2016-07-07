@@ -124,7 +124,10 @@ for nFileNum = 1:numel(stDirRoot)
     
     % remove temporary file
     delete(ops.fproc);
-    %%
+    %
+    fileID = fopen(sLogFile, 'a');
+    fprintf(fileID,', done\n');
+    fclose(fileID);
     catch ME
         fileID = fopen(sLogFile, 'a');
         fprintf(fileID,', !!! Error while doing %s !!!\n', sFileName);
@@ -132,7 +135,4 @@ for nFileNum = 1:numel(stDirRoot)
         disp(['    Error while doing ', sFileName])
         disp(ME.identifier)
     end
-    fileID = fopen(sLogFile, 'a');
-    fprintf(fileID,', done\n');
-    fclose(fileID);
 end
