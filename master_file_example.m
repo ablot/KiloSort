@@ -4,7 +4,12 @@ addpath(genpath('/home/blota/Matlab/KiloSort')) % path to kilosort folder
 addpath(genpath('/home/blota/Matlab/npy-matlab')) % path to npy-matlab scripts
 
 % Directory to process
-sRootDir =  '/mnt/ssd/Shohei/processed_data/160526_ephys3/datfiles';
+sRootDir =  '/mnt/ssd/Shohei/processed_data/160520_ephys2/datfiles';
+sLogFile =  '/mnt/ssd/Shohei/processed_data/160520_ephys2/logkilo.txt';
+
+fileID = fopen(sLogFile, 'w');
+fprintf(fileID,'Starting log kilosort for %s\n', sRootDir);
+fclose(fileID);
 
 % list of processed folders
 done =  '/mnt/ssd/Shohei/processed_data/160520_ephys2/datfiles';
@@ -15,6 +20,11 @@ for nFileNum = 1:numel(stDirRoot)
         continue
     end
     disp(['Doing  ' sFileName])
+    fileID = fopen(sLogFile, 'a');
+    fprintf(fileID,'   Doing %s\n', sFileName);
+    fclose(fileID);
+    
+    try
     sRootPath = fullfile(sRootDir, sFileName);
     sDatFileName = [sFileName '.dat'];
     
@@ -30,7 +40,7 @@ for nFileNum = 1:numel(stDirRoot)
     ops.fs                  = 30000;        % sampling rate
     ops.NchanTOT            = 32;           % total number of channels
     ops.Nchan               = 32;           % number of active channels
-    ops.Nfilt               = 32*3;           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
+    ops.Nfilt               = 32*2;           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
     ops.nNeighPC            = 12; % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
     ops.nNeigh              = 16; % visualization only (Phy): number of neighboring templates to retain projections of (16)
     
@@ -112,9 +122,19 @@ for nFileNum = 1:numel(stDirRoot)
     save(fullfile(ops.root,  'rez.mat'), 'rez');
     
     % save python results file for Phy
-    rezToPhy(rez, ops.root, sDatFileName);
+    rezToPhy(rez, ops.root);
     
     % remove temporary file
     delete(ops.fproc);
     %%
+    catch ME
+        fileID = fopen(sLogFile, 'a');
+        fprintf(fileID,'    Error while doing %s\n', sFileName);
+        fclose(fileID);
+        disp(['    Error while doing ', sFileName])
+        disp(ME.identifier)
+    end
+    fileID = fopen(sLogFile, 'a');
+    fprintf(fileID,'Done\n');
+    fclose(fileID);
 end
