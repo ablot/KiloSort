@@ -19,7 +19,7 @@ for nFileNum = 1:numel(stDirRoot)
     end
     disp(['Doing  ' sFileName])
     fileID = fopen(sLogFile, 'a');
-    fprintf(fileID,'   Doing %s', sFileName);
+    fprintf(fileID,'%s', sFileName);
     fclose(fileID);
     
     try
