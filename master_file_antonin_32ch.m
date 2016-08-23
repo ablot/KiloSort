@@ -4,9 +4,9 @@ addpath(genpath('/home/blota/Matlab/KiloSort')) % path to kilosort folder
 addpath(genpath('/home/blota/Matlab/npy-matlab')) % path to npy-matlab scripts
 
 % Directory to process
-sRootDir =  '/home/rgtm02-mic/Data/Antonin';
-sLogFile =  '/home/rgtm02-mic/Data/Antonin/logkilo_shk0.csv';
-sFilter = 'shk0'; % will cluster only exp with that in their name
+sRootDir =  '/mnt/ssd/Shohei/processed_data/160819_ephys11/datfiles';
+sLogFile =  '/mnt/ssd/Shohei/processed_data/160819_ephys11/logkilo_shk_32ch.csv';
+sFilter = 'shkshk'; % will cluster only exp with that in their name
 nNumChans = 32;
 bTetrode = false; %for display only, should I put channels 4 by line
 
@@ -17,6 +17,7 @@ fclose(fileID);
 stDirRoot = dir(sRootDir);
 for nFileNum = 1:numel(stDirRoot)
     sFileName = stDirRoot(nFileNum).name;
+    
     if length(sFileName)< 3 || isempty(strfind(sFileName, sFilter))
         continue
     end
