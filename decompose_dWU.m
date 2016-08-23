@@ -1,4 +1,4 @@
-function  [W, U, mu, UtU, nu] = decompose_dWU(dWU, Nrank)
+function  [W, U, mu, UtU, nu] = decompose_dWU(ops, dWU, Nrank, kcoords)
 
 [nt0 Nchan Nfilt] = size(dWU);
 
@@ -8,13 +8,23 @@ mu = zeros(Nfilt, 1, 'single');
 % dmax = zeros(Nfilt, 1);
 
 dWU(isnan(dWU)) = 0;
-parfor k = 1:Nfilt
-    [W(:,:,k), U(:,:,k), mu(k)] = get_svds(dWU(:,:,k), Nrank);
+if ops.parfor
+    parfor k = 1:Nfilt
+        [W(:,:,k), U(:,:,k), mu(k)] = get_svds(dWU(:,:,k), Nrank);
+    end
+else
+    for k = 1:Nfilt
+        [W(:,:,k), U(:,:,k), mu(k)] = get_svds(dWU(:,:,k), Nrank);
+    end
 end
 U = permute(U, [1 3 2]);
 W = permute(W, [1 3 2]);
 
 U(isnan(U)) = 0;
+
+if numel(unique(kcoords))>1
+    U = zeroOutKcoords(U, kcoords, ops.criterionNoiseChannels);
+end
 
 UtU = abs(U(:,:,1)' * U(:,:,1)) > .1;
 

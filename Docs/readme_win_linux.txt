@@ -7,7 +7,7 @@ You should be able to run the code on a CPU without compiling any files, but it 
 Windows
 
 Install Visual Studio Community (2012 or 2013)
-Install CUDA (comes with compatible Nvidia drivers). If you get an error of not finding the GPU at the beginning of installation, you should try newer Nvidia drivers. Ignoring the warning appears to install CUDA without proper paths and then compilation does not work. 
+Install CUDA (comes with compatible Nvidia drivers, though it must be installed separately. If you need to download it, look here: https://developer.nvidia.com/cuda-downloads). If you get an error of not finding the GPU at the beginning of installation, you should try newer Nvidia drivers. Ignoring the warning appears to install CUDA without proper paths and then compilation does not work. 
 
 Copy mex_CUDA_win64.xml (or nvcc_msvc120.xml, or a similarly named file, compatible with your Visual Studio installation version; 11 for 2012 and 12 for 2013) from here
 matlabroot/toolbox/distcomp/gpu/extern/src/mex/win64
@@ -18,6 +18,16 @@ start regedit,
 navigate to HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\GraphicsDrivers
 create new DWORD key called TdrLevel, set value to 0,
 restart PC.
+
+If you find that gpuDevice(1); takes more than 2 minutes each time you 
+run then you dont have the space to store its compiled files
+GTX 1080 seems to have this issue. 
+In order to fix this set an environment variable "CUDA_CACHE_MAXSIZE " on the machine to 
+some high value like 1GB.  By default "CUDA_CACHE_MAXSIZE" is 32MB. 
+In Windows you can do this in properties > advanced system settings > environment variables. 
+In order to set the cache to 1GB use CUDA_CACHE_MAXSIZE 1073741824. 
+
+
 
 Linux
 

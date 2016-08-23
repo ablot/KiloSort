@@ -1,10 +1,10 @@
-% function rez = fullMPMU(ops, rez, DATA)
+function rez = fullMPMU(ops, rez, DATA)
 
 Nfilt   = ops.Nfilt;
 lam =  ones(Nfilt, 1, 'single');
 lam(:)    = ops.lam(3);
 
-[W, U, mu, UtU, nu] = decompose_dWU(rez.dWU, ops.Nrank);
+[W, U, mu, UtU, nu] = decompose_dWU(ops, rez.dWU, ops.Nrank,rez.ops.kcoords);
 
 
 pm = exp(-ops.momentum(2));
@@ -262,6 +262,6 @@ for k = 1:size(U,3)
    Urot(:,:,k)  = rez.WrotInv' * Urot(:,:,k);
 end
 for n = 1:size(U,2)
-    rez.Wraw(:,:,n) = sq(U(:,n,:)) * sq(rez.W(:,n,:))';
+    rez.Wraw(:,:,n) = sq(Urot(:,n,:)) * sq(rez.W(:,n,:))';
 end
 %

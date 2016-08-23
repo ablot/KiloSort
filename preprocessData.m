@@ -1,6 +1,7 @@
 function [rez, DATA, uproj] = preprocessData(ops)
-
+tic;
 uproj = [];
+
 
 if ~isempty(ops.chanMap)
     if ischar(ops.chanMap)
@@ -15,19 +16,31 @@ if ~isempty(ops.chanMap)
             yc = [1:1:numel(chanMapConn)]';
         end
     else
+        chanMap = ops.chanMap;
         chanMapConn = ops.chanMap;
         xc = zeros(numel(chanMapConn), 1);
         yc = [1:1:numel(chanMapConn)]';
-        kcoords = ones(ops.Nchan, 1);
+        connected = true(numel(chanMap), 1);        
     end
 else
-    chanMapConn = 1:ops.Nchan;
-    kcoords = ones(ops.Nchan, 1);
+    chanMap  = 1:ops.Nchan;
+    connected = true(numel(chanMap), 1);
+    
+    chanMapConn = 1:ops.Nchan;    
     xc = zeros(numel(chanMapConn), 1);
     yc = [1:1:numel(chanMapConn)]';
 end
+if ~exist('kcoords', 'var')
+    kcoords = ones(ops.Nchan, 1);
+end
 NchanTOT = ops.NchanTOT;
 NT = ops.NT ;
+
+rez.xc = xc;
+rez.yc = yc;
+rez.connected = connected;
+rez.ops.chanMap = chanMap;
+rez.ops.kcoords = kcoords; 
 
 d = dir(ops.fbinary);
 ops.sampsToRead = floor(d.bytes/NchanTOT/2);
@@ -48,7 +61,11 @@ Nbatch_buff = floor(4/5 * nint16s/ops.Nchan /(NT-ops.ntbuff)); % factor of 4/5 f
 Nbatch_buff = min(Nbatch_buff, Nbatch);
 
 %% load data into patches, filter, compute covariance
-[b1, a1] = butter(3, ops.fshigh/ops.fs, 'high');
+if isfield(ops,'fslow')&&ops.fslow<ops.fs/2
+    [b1, a1] = butter(3, [ops.fshigh/ops.fs,ops.fslow/ops.fs]*2, 'bandpass');
+else
+    [b1, a1] = butter(3, ops.fshigh/ops.fs*2, 'high');
+end
 
 fprintf('Time %3.0fs. Loading raw data... \n', toc);
 fid = fopen(ops.fbinary, 'r');
