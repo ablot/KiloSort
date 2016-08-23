@@ -12,7 +12,7 @@ if bTetrode
     ycoords   = ycoords(:);
 else % put the channel in a line
     xcoords   = zeros(nNumChannels, 1);
-    ycoords   = (1:nNumChannels);
+    ycoords   = (1:nNumChannels)';
 end
 kcoords   = ones(nNumChannels,1); % grouping of channels (i.e. tetrode groups)
 
