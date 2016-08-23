@@ -4,9 +4,11 @@ addpath(genpath('/home/blota/Matlab/KiloSort')) % path to kilosort folder
 addpath(genpath('/home/blota/Matlab/npy-matlab')) % path to npy-matlab scripts
 
 % Directory to process
-sRootDir =  '/home/rgtm02-mic/Data/Antonin/datfiles';
-sLogFile =  '/home/rgtm02-mic/Data/Antonin/logkilo.csv';
-sFilter = 'pos'; % will cluster only exp with that in their name
+sRootDir =  '/home/rgtm02-mic/Data/Antonin';
+sLogFile =  '/home/rgtm02-mic/Data/Antonin/logkilo_shk0.csv';
+sFilter = 'shk0'; % will cluster only exp with that in their name
+nNumChans = 32;
+bTetrode = false; %for display only, should I put channels 4 by line
 
 fileID = fopen(sLogFile, 'a');
 fprintf(fileID,'Starting log kilosort for %s\n', sRootDir);
@@ -37,10 +39,10 @@ for nFileNum = 1:numel(stDirRoot)
     ops.root                = fullfile(sRootPath); % 'openEphys' only: where raw files are
     
     ops.fs                  = 30000;        % sampling rate
-    ops.NchanTOT            = 32;           % total number of channels
-    ops.Nchan               = 32;           % number of active channels
-    ops.Nfilt               = 32*2;           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
-    ops.nNeighPC            = 12; % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
+    ops.NchanTOT            = nNumChans;           % total number of channels
+    ops.Nchan               = nNumChans;           % number of active channels
+    ops.Nfilt               = max(nNumChans*2, 32);           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
+    ops.nNeighPC            = min(nNumChans, 12); % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
     ops.nNeigh              = 16; % visualization only (Phy): number of neighboring templates to retain projections of (16)
     
     % options for channel whitening
@@ -49,7 +51,8 @@ for nFileNum = 1:numel(stDirRoot)
     ops.whiteningRange      = 32; % how many channels to whiten together (Inf for whole probe whitening, should be fine if Nchan<=32)
     
     % define the channel map as a filename (string) or simply an array
-    [sChannelMapFileName] = createChannelMapFile(ops.NchanTOT, sRootPath); % create the map file
+    [sChannelMapFileName] = createChannelMapFile(ops.NchanTOT, sRootPath,...
+        bTetrode); % create the map file
     ops.chanMap             = sChannelMapFileName; % make this file using createChannelMapFile.m
     % ops.chanMap = 1:ops.Nchan; % treated as linear probe if a chanMap file
     
@@ -135,5 +138,6 @@ for nFileNum = 1:numel(stDirRoot)
         fclose(fileID);
         disp(['    Error while doing ', sFileName])
         disp(ME.identifier)
+	rethrow(ME)
     end
 end

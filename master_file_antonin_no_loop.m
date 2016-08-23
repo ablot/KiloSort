@@ -4,15 +4,17 @@ addpath(genpath('/home/blota/Matlab/KiloSort')) % path to kilosort folder
 addpath(genpath('/home/blota/Matlab/npy-matlab')) % path to npy-matlab scripts
 
 % Directory to process
-sRootDir =  '/home/rgtm02-mic/Data/Antonin';
-sFileName = '160526-ephys3_2016-05-26_17-39-52_rampIV_kwd_104_rec0_shkshk1';
+sRootDir =  '/home/rgtm02-mic/Data/Antonin/';
+sFileName = '160313_TR6_concatenated_shk_shk0-exp_160313_TR6-pos_2-kwd_101';
+nNumChans = 32;
+bTetrode = true;
 
 disp(['Doing  ' sFileName])
 
 sRootPath = fullfile(sRootDir, sFileName);
 sDatFileName = [sFileName '.dat'];
 
-ops.GPU                 = 0; % whether to run this code on an Nvidia GPU (much faster, mexGPUall first)
+ops.GPU                 = 1; % whether to run this code on an Nvidia GPU (much faster, mexGPUall first)
 ops.verbose             = 1; % whether to print command line progress
 ops.showfigures         = 0; % whether to plot figures during optimization
 
@@ -22,19 +24,20 @@ ops.fproc               = fullfile(sRootPath, 'temp_wh.dat'); % residual from RA
 ops.root                = fullfile(sRootPath); % 'openEphys' only: where raw files are
 
 ops.fs                  = 30000;        % sampling rate
-ops.NchanTOT            = 32;           % total number of channels
-ops.Nchan               = 32;           % number of active channels
-ops.Nfilt               = 32*2;           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
-ops.nNeighPC            = 12; % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
+ops.NchanTOT            = nNumChans;           % total number of channels
+ops.Nchan               = nNumChans;           % number of active channels
+ops.Nfilt               = max(nNumChans*4, 32);           % number of filters to use (2-4 times more than Nchan, should be a multiple of 32)
+ops.nNeighPC            = min(nNumChans, 12); % visualization only (Phy): number of channnels to mask the PCs, leave empty to skip (12)
 ops.nNeigh              = 16; % visualization only (Phy): number of neighboring templates to retain projections of (16)
 
 % options for channel whitening
 ops.whitening           = 'full'; % type of whitening (default 'full', for 'noSpikes' set options for spike detection below)
 ops.nSkipCov            = 1; % compute whitening matrix from every N-th batch (1)
-ops.whiteningRange      = 32; % how many channels to whiten together (Inf for whole probe whitening, should be fine if Nchan<=32)
+ops.whiteningRange      = inf; % how many channels to whiten together (Inf for whole probe whitening, should be fine if Nchan<=32)
 
 % define the channel map as a filename (string) or simply an array
-[sChannelMapFileName] = createChannelMapFile(ops.NchanTOT, sRootPath); % create the map file
+[sChannelMapFileName] = createChannelMapFile(ops.NchanTOT, sRootPath, bTetrode); ...
+% create the map file
 ops.chanMap             = sChannelMapFileName; % make this file using createChannelMapFile.m
 % ops.chanMap = 1:ops.Nchan; % treated as linear probe if a chanMap file
 
