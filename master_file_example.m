@@ -3,8 +3,8 @@
 addpath(genpath('/home/blota/Matlab/KiloSort')) % path to kilosort folder
 addpath(genpath('/home/blota/Matlab/npy-matlab')) % path to npy-matlab scripts
 
-pathToYourConfigFile = 'D:\CODE\Kilosort\configFiles'; % take from Github folder and put it somewhere else (together with the master_file)
-run(fullfile(pathToYourConfigFile, 'StandardConfig.m'))
+pathToYourConfigFile = '/home/blota/Matlab/KiloSort/configFiles'; % take from Github folder and put it somewhere else (together with the master_file)
+run(fullfile(pathToYourConfigFile, 'AntoninConfig32Ch.m'))
 
 tic; % start timer
 %
