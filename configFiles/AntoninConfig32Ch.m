@@ -1,10 +1,9 @@
-% Directory to process
-sRootDir =  '/mnt/ssd/Shohei/processed_data/160819_ephys11/datfiles/';
-sExpName = 'ephys11_2016-08-19_22-51-21_block19_kwd_101_rec0_shkshk0';
-sLogFile =  '/mnt/ssd/Shohei/processed_data/160819_ephys11/logkilo_shk_32ch.csv';
-sFilter = 'shkshk'; % will cluster only exp with that in their name
-nNumChans = 32;
+function [ops] = create_config(sRootDir, sExpName, sLogFile, sFilter, 
+                                nNumChans)
+
 bTetrode = false; %for display only, should I put channels 4 by line
+
+
 
 sRootPath = fullfile(sRootDir, sExpName);
 
